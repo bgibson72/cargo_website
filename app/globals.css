@@ -1,0 +1,67 @@
+@import "tailwindcss";
+
+/* ─── Magical Night custom font ─── */
+@font-face {
+  font-family: "Magical Night";
+  src:
+    url("/fonts/MagicalNight.woff2") format("woff2"),
+    url("/fonts/MagicalNight.woff")  format("woff"),
+    url("/fonts/MagicalNight.ttf")   format("truetype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ─── Design tokens ─── */
+:root {
+  --bg:           #F0EAE0;
+  --bg-surface:   #E6DDD2;
+  --bg-card:      #FFFFFF;
+  --accent:       #C8752E;
+  --accent-light: #E0933F;
+  --text:         #1C0F06;
+  --text-muted:   #7A5030;
+  --border:       #D4C4B0;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg:           #1C1006;
+    --bg-surface:   #2A1A0A;
+    --bg-card:      #3A2410;
+    --accent:       #D4803A;
+    --accent-light: #E8964E;
+    --text:         #F2EDE4;
+    --text-muted:   #9A7255;
+    --border:       #4A3020;
+  }
+}
+
+/* ─── Tailwind v4 theme extension ─── */
+@theme inline {
+  --color-cargo-orange:       #C8752E;
+  --color-cargo-orange-light: #E0933F;
+  --color-cargo-cream:        #F0EAE0;
+  --color-cargo-dark:         #1C1006;
+  --color-cargo-surface:      #2A1A0A;
+  --color-cargo-card:         #3A2410;
+  --color-cargo-text:         #F2EDE4;
+  --color-cargo-muted:        #9A7255;
+  --color-cargo-border:       #4A3020;
+  --font-magical: "Magical Night", Georgia, "Times New Roman", serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--text);
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ─── Utility: hide scrollbar on carousel ─── */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }

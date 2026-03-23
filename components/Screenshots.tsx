@@ -7,38 +7,38 @@ import Image from "next/image";
 const screenshots = [
     {
         src: "/screenshots/screenshot-1.png",
-        alt: "Cargo — content view",
-        title: "Your Deliveries at a Glance",
-        caption:
-            "All your active packages in one clean list, with live status and estimated arrival.",
-    },
-    {
-        src: "/screenshots/screenshot-2.png",
         alt: "Cargo — empty state",
         title: "Clean & Simple",
         caption:
             "No clutter, no noise. Add your first package and Cargo takes care of the rest.",
     },
     {
-        src: "/screenshots/screenshot-3.png",
-        alt: "Cargo — add a package",
-        title: "Add a Package in Seconds",
+        src: "/screenshots/screenshot-2.png",
+        alt: "Cargo — content view",
+        title: "Your Deliveries at a Glance",
         caption:
-            "Paste any tracking number and Cargo detects the carrier automatically.",
+            "All your active packages in one clean list, with live status and estimated arrival.",
     },
     {
-        src: "/screenshots/screenshot-4.png",
+        src: "/screenshots/screenshot-3.png",
         alt: "Cargo — select carrier",
         title: "1,300+ Carriers Supported",
         caption:
             "UPS, FedEx, USPS, DHL and over a thousand more — always the right carrier, automatically.",
     },
     {
-        src: "/screenshots/screenshot-5.png",
+        src: "/screenshots/screenshot-4.png",
         alt: "Cargo — package details",
         title: "Full Delivery Timeline",
         caption:
             "Every scan, every status update — from the warehouse to your front door.",
+    },
+    {
+        src: "/screenshots/screenshot-5.png",
+        alt: "Cargo — light & dark mode settings",
+        title: "Light & Dark Mode",
+        caption:
+            "A warm, hand-crafted design in both light and dark — switch anytime from Settings.",
     },
     {
         src: "/screenshots/screenshot-6.png",
@@ -46,13 +46,6 @@ const screenshots = [
         title: "Cargo Pro",
         caption:
             "Unlock unlimited tracking, automatic background refresh, and priority support.",
-    },
-    {
-        src: "/screenshots/screenshot-7.png",
-        alt: "Cargo — light & dark mode settings",
-        title: "Light & Dark Mode",
-        caption:
-            "A warm, hand-crafted design in both light and dark — switch anytime from Settings.",
     },
 ];
 

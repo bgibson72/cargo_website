@@ -32,8 +32,8 @@ export default function Hero() {
           <Image
             src="/cargo-logo.png"
             alt="Cargo box logo"
-            width={220}
-            height={220}
+            width={340}
+            height={340}
             className="drop-shadow-2xl"
             priority
           />

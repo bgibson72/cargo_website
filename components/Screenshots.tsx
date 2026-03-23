@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 
@@ -49,14 +49,16 @@ const screenshots = [
     },
 ];
 
+const N = screenshots.length;
+
 // Dimensions
 const ACTIVE_W = 260;
 const ACTIVE_H = 560;
 const SIDE_SCALE = 0.78;
-const SIDE_W = ACTIVE_W * SIDE_SCALE;
-const SIDE_H = ACTIVE_H * SIDE_SCALE;
-// How much the side phones are horizontally offset from centre (negative = overlap)
-const SIDE_OFFSET = ACTIVE_W * 0.52;
+const SIDE_W = Math.round(ACTIVE_W * SIDE_SCALE);
+const SIDE_H = Math.round(ACTIVE_H * SIDE_SCALE);
+const SIDE_OFFSET = Math.round(ACTIVE_W * 0.52); // horizontal offset from centre
+const ARROW_OFFSET = SIDE_OFFSET + SIDE_W + 16;   // arrow button x from centre
 
 function PhoneShell({
     width,
@@ -76,10 +78,7 @@ function PhoneShell({
     const islandH = Math.round(width * 0.1);
 
     return (
-        <div
-            className="relative shrink-0 select-none overflow-visible"
-            style={{ width, height }}
-        >
+        <div className="relative shrink-0 select-none overflow-visible" style={{ width, height }}>
             <div
                 className="absolute inset-0"
                 style={{
@@ -90,7 +89,6 @@ function PhoneShell({
                     boxShadow: shadow,
                 }}
             >
-                {/* Dynamic Island */}
                 <div
                     className="absolute left-1/2 -translate-x-1/2"
                     style={{
@@ -101,14 +99,7 @@ function PhoneShell({
                         backgroundColor: "var(--text)",
                     }}
                 />
-                {/* Screen */}
-                <div
-                    className="absolute overflow-hidden"
-                    style={{
-                        inset: 1,
-                        borderRadius: innerRadius,
-                    }}
-                >
+                <div className="absolute overflow-hidden" style={{ inset: 1, borderRadius: innerRadius }}>
                     {children}
                 </div>
             </div>
@@ -141,37 +132,68 @@ function PhoneShell({
     );
 }
 
-function SlideImage({ src, alt }: { src: string; alt: string }) {
+function ArrowBtn({
+    onClick,
+    label,
+    side,
+}: {
+    onClick: () => void;
+    label: string;
+    side: "left" | "right";
+}) {
     return (
-        <Image
-            src={src}
-            alt={alt}
-            fill
-            className="object-cover"
-            sizes="320px"
-            priority
-        />
+        <button
+            onClick={onClick}
+            aria-label={label}
+            className="absolute top-1/2 -translate-y-1/2 w-11 h-11 rounded-full flex items-center justify-center transition-all hover:scale-110 active:scale-95"
+            style={{
+                [side]: -ARROW_OFFSET - 22, // 22 = half of w-11 (44px)
+                zIndex: 10,
+                backgroundColor: "var(--bg-card)",
+                border: "1px solid var(--border)",
+                color: "var(--text)",
+                fontSize: 18,
+                boxShadow: "0 4px 12px rgba(0,0,0,0.18)",
+            }}
+        >
+            {side === "left" ? "←" : "→"}
+        </button>
     );
 }
 
 export default function Screenshots() {
     const [active, setActive] = useState(0);
+    // direction: +1 = forward (right), -1 = backward (left)
+    const direction = useRef(1);
 
-    const prev = useCallback(
-        () => setActive((a) => (a - 1 + screenshots.length) % screenshots.length),
-        []
-    );
-    const next = useCallback(
-        () => setActive((a) => (a + 1) % screenshots.length),
-        []
-    );
+    const prev = useCallback(() => {
+        direction.current = -1;
+        setActive((a) => (a - 1 + N) % N);
+    }, []);
 
-    const prevIdx = (active - 1 + screenshots.length) % screenshots.length;
-    const nextIdx = (active + 1) % screenshots.length;
+    const next = useCallback(() => {
+        direction.current = 1;
+        setActive((a) => (a + 1) % N);
+    }, []);
+
+    const goTo = useCallback((i: number, cur: number) => {
+        direction.current = i > cur ? 1 : -1;
+        setActive(i);
+    }, []);
+
+    const prevIdx = (active - 1 + N) % N;
+    const nextIdx = (active + 1) % N;
     const current = screenshots[active];
 
-    // Total visual height of the stack
-    const stackH = ACTIVE_H + 40; // 40px breathing room below active for shadow
+    // Slide enter/exit x values for circular motion
+    const SLIDE_TRAVEL = ACTIVE_W * 1.1;
+    const variants = {
+        enter: (dir: number) => ({ x: dir * SLIDE_TRAVEL, opacity: 0 }),
+        center: { x: 0, opacity: 1 },
+        exit: (dir: number) => ({ x: -dir * SLIDE_TRAVEL, opacity: 0 }),
+    };
+
+    const stackH = ACTIVE_H + 40;
 
     return (
         <section
@@ -204,18 +226,16 @@ export default function Screenshots() {
                 className="relative mx-auto"
                 style={{ width: ACTIVE_W, height: stackH }}
             >
-                {/* PREV phone — left, behind active */}
+                {/* Prev phone — left, behind active */}
                 <motion.div
-                    key={`prev-${prevIdx}`}
                     className="absolute cursor-pointer"
                     style={{ zIndex: 1 }}
                     animate={{
                         x: -SIDE_OFFSET,
                         y: (ACTIVE_H - SIDE_H) / 2,
-                        scale: 1,
                         opacity: 0.72,
                     }}
-                    transition={{ type: "spring", stiffness: 320, damping: 34 }}
+                    transition={{ type: "spring", stiffness: 300, damping: 32 }}
                     onClick={prev}
                     aria-label="Previous screenshot"
                 >
@@ -224,25 +244,26 @@ export default function Screenshots() {
                         height={SIDE_H}
                         shadow="0 16px 40px -8px rgba(0,0,0,0.45)"
                     >
-                        <SlideImage
+                        <Image
                             src={screenshots[prevIdx].src}
                             alt={screenshots[prevIdx].alt}
+                            fill
+                            className="object-cover"
+                            sizes="220px"
                         />
                     </PhoneShell>
                 </motion.div>
 
-                {/* NEXT phone — right, behind active */}
+                {/* Next phone — right, behind active */}
                 <motion.div
-                    key={`next-${nextIdx}`}
                     className="absolute cursor-pointer"
                     style={{ zIndex: 1 }}
                     animate={{
                         x: SIDE_OFFSET,
                         y: (ACTIVE_H - SIDE_H) / 2,
-                        scale: 1,
                         opacity: 0.72,
                     }}
-                    transition={{ type: "spring", stiffness: 320, damping: 34 }}
+                    transition={{ type: "spring", stiffness: 300, damping: 32 }}
                     onClick={next}
                     aria-label="Next screenshot"
                 >
@@ -251,42 +272,71 @@ export default function Screenshots() {
                         height={SIDE_H}
                         shadow="0 16px 40px -8px rgba(0,0,0,0.45)"
                     >
-                        <SlideImage
+                        <Image
                             src={screenshots[nextIdx].src}
                             alt={screenshots[nextIdx].alt}
+                            fill
+                            className="object-cover"
+                            sizes="220px"
                         />
                     </PhoneShell>
                 </motion.div>
 
-                {/* ACTIVE phone — centre, in front */}
-                <motion.div
-                    className="absolute"
-                    style={{ zIndex: 2, left: 0, top: 0 }}
-                    animate={{ x: 0, y: 0, scale: 1, opacity: 1 }}
-                    transition={{ type: "spring", stiffness: 320, damping: 34 }}
+                {/* Active phone — centre, in front with circular slide animation */}
+                <div
+                    className="absolute overflow-hidden"
+                    style={{
+                        zIndex: 2,
+                        left: 0,
+                        top: 0,
+                        width: ACTIVE_W,
+                        height: ACTIVE_H,
+                        borderRadius: Math.round(ACTIVE_W * 0.154),
+                    }}
                 >
+                    <AnimatePresence initial={false} custom={direction.current} mode="popLayout">
+                        <motion.div
+                            key={active}
+                            custom={direction.current}
+                            variants={variants}
+                            initial="enter"
+                            animate="center"
+                            exit="exit"
+                            transition={{
+                                x: { type: "spring", stiffness: 300, damping: 30 },
+                                opacity: { duration: 0.18 },
+                            }}
+                            className="absolute inset-0"
+                        >
+                            <Image
+                                src={current.src}
+                                alt={current.alt}
+                                fill
+                                className="object-cover"
+                                sizes="280px"
+                                priority
+                            />
+                        </motion.div>
+                    </AnimatePresence>
+                </div>
+
+                {/* Phone shell overlay (border + buttons) rendered on top of sliding image */}
+                <div className="absolute inset-0" style={{ zIndex: 3, pointerEvents: "none" }}>
                     <PhoneShell
                         width={ACTIVE_W}
                         height={ACTIVE_H}
                         shadow="0 32px 64px -12px rgba(0,0,0,0.65), 0 0 0 1px rgba(255,255,255,0.06)"
                     >
-                        <AnimatePresence mode="wait">
-                            <motion.div
-                                key={active}
-                                className="absolute inset-0"
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                exit={{ opacity: 0 }}
-                                transition={{ duration: 0.22 }}
-                            >
-                                <SlideImage
-                                    src={current.src}
-                                    alt={current.alt}
-                                />
-                            </motion.div>
-                        </AnimatePresence>
+                        {/* empty — image rendered behind */}
+                        <div />
                     </PhoneShell>
-                </motion.div>
+                </div>
+
+                {/* ← Arrow — left of stage */}
+                <ArrowBtn onClick={prev} label="Previous screenshot" side="left" />
+
+                {/* → Arrow — right of stage */}
+                <ArrowBtn onClick={next} label="Next screenshot" side="right" />
             </div>
 
             {/* Caption */}
@@ -299,16 +349,10 @@ export default function Screenshots() {
                         exit={{ opacity: 0, y: -8 }}
                         transition={{ duration: 0.25 }}
                     >
-                        <p
-                            className="text-base font-semibold mb-1"
-                            style={{ color: "var(--text)" }}
-                        >
+                        <p className="text-base font-semibold mb-1" style={{ color: "var(--text)" }}>
                             {current.title}
                         </p>
-                        <p
-                            className="text-sm max-w-sm mx-auto"
-                            style={{ color: "var(--text-muted)" }}
-                        >
+                        <p className="text-sm max-w-sm mx-auto" style={{ color: "var(--text-muted)" }}>
                             {current.caption}
                         </p>
                     </motion.div>
@@ -320,7 +364,7 @@ export default function Screenshots() {
                 {screenshots.map((_, i) => (
                     <button
                         key={i}
-                        onClick={() => setActive(i)}
+                        onClick={() => goTo(i, active)}
                         aria-label={`Go to screenshot ${i + 1}`}
                         className="transition-all duration-300 rounded-full"
                         style={{
@@ -331,36 +375,6 @@ export default function Screenshots() {
                         }}
                     />
                 ))}
-            </div>
-
-            {/* Arrow buttons */}
-            <div className="flex justify-center gap-4 mt-6">
-                <button
-                    onClick={prev}
-                    aria-label="Previous"
-                    className="w-11 h-11 rounded-full flex items-center justify-center transition-opacity hover:opacity-80"
-                    style={{
-                        backgroundColor: "var(--bg-card)",
-                        border: "1px solid var(--border)",
-                        color: "var(--text)",
-                        fontSize: 18,
-                    }}
-                >
-                    ←
-                </button>
-                <button
-                    onClick={next}
-                    aria-label="Next"
-                    className="w-11 h-11 rounded-full flex items-center justify-center transition-opacity hover:opacity-80"
-                    style={{
-                        backgroundColor: "var(--bg-card)",
-                        border: "1px solid var(--border)",
-                        color: "var(--text)",
-                        fontSize: 18,
-                    }}
-                >
-                    →
-                </button>
             </div>
         </section>
     );

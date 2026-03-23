@@ -45,79 +45,16 @@ const screenshots = [
 
 const N = screenshots.length;
 
-const ACTIVE_W = 260;
-const ACTIVE_H = 560;
+// Dimensions — aspect ratio matches iPhone 17 Pro Max screenshots (1320×2868)
+const ACTIVE_W = 240;
+const ACTIVE_H = Math.round(ACTIVE_W * (2868 / 1320));
 const SIDE_SCALE = 0.78;
 const SIDE_W = Math.round(ACTIVE_W * SIDE_SCALE);
 const SIDE_H = Math.round(ACTIVE_H * SIDE_SCALE);
-const SIDE_OFFSET = Math.round(ACTIVE_W * 0.52);
-const ARROW_OFFSET = SIDE_OFFSET + SIDE_W + 16;
-
-function PhoneShell({
-    width,
-    height,
-    shadow,
-    children,
-}: {
-    width: number;
-    height: number;
-    shadow: string;
-    children?: React.ReactNode;
-}) {
-    const border = Math.round(width * 0.03);
-    const radius = Math.round(width * 0.154);
-    const innerRadius = radius - border - 1;
-
-    return (
-        <div className="relative shrink-0 select-none" style={{ width, height }}>
-            {/* Frame border */}
-            <div
-                className="absolute inset-0 pointer-events-none"
-                style={{
-                    borderRadius: radius,
-                    border: `${border}px solid`,
-                    borderColor: "color-mix(in srgb, var(--text) 22%, transparent)",
-                    boxShadow: shadow,
-                    zIndex: 2,
-                }}
-            />
-            {/* Screen — clips children to rounded rect */}
-            <div
-                className="absolute overflow-hidden"
-                style={{ inset: border, borderRadius: innerRadius, zIndex: 1 }}
-            >
-                {children}
-            </div>
-            {/* Side button */}
-            <div
-                className="absolute rounded-r-full"
-                style={{
-                    right: -Math.round(width * 0.038),
-                    top: Math.round(height * 0.178),
-                    width: Math.round(width * 0.015),
-                    height: Math.round(height * 0.107),
-                    backgroundColor: "color-mix(in srgb, var(--text) 25%, transparent)",
-                    zIndex: 2,
-                }}
-            />
-            {/* Volume buttons */}
-            {[0.121, 0.2].map((topFrac, i) => (
-                <div
-                    key={i}
-                    className="absolute rounded-l-full"
-                    style={{
-                        left: -Math.round(width * 0.038),
-                        top: Math.round(height * topFrac),
-                        width: Math.round(width * 0.015),
-                        height: Math.round(height * 0.064),
-                        backgroundColor: "color-mix(in srgb, var(--text) 25%, transparent)",
-                        zIndex: 2,
-                    }}
-                />
-            ))}
-        </div>
-    );
-}
+const SIDE_OFFSET = Math.round(ACTIVE_W * 0.56);
+const ARROW_OFFSET = SIDE_OFFSET + SIDE_W + 12;
+const CORNER_R = 28; // screenshot rounded corners
+const SIDE_CORNER_R = Math.round(CORNER_R * SIDE_SCALE);
 
 function ArrowBtn({ onClick, label, side }: { onClick: () => void; label: string; side: "left" | "right" }) {
     return (
@@ -163,7 +100,7 @@ export default function Screenshots() {
     const nextIdx = (active + 1) % N;
     const current = screenshots[active];
 
-    const SLIDE_TRAVEL = ACTIVE_W * 1.1;
+    const SLIDE_TRAVEL = ACTIVE_W * 1.2;
     const variants = {
         enter: (dir: number) => ({ x: dir * SLIDE_TRAVEL, opacity: 0 }),
         center: { x: 0, opacity: 1 },
@@ -191,60 +128,53 @@ export default function Screenshots() {
                 </motion.div>
             </div>
 
-            {/* Three-phone stage */}
+            {/* Three-screenshot stage */}
             <div className="relative mx-auto" style={{ width: ACTIVE_W, height: stackH }}>
 
-                {/* Prev phone */}
+                {/* Prev screenshot */}
                 <motion.div
-                    className="absolute cursor-pointer"
-                    style={{ zIndex: 1 }}
-                    animate={{ x: -SIDE_OFFSET, y: (ACTIVE_H - SIDE_H) / 2, opacity: 0.72 }}
+                    className="absolute cursor-pointer overflow-hidden"
+                    style={{ zIndex: 1, width: SIDE_W, height: SIDE_H, borderRadius: SIDE_CORNER_R, boxShadow: "0 12px 32px rgba(0,0,0,0.25)" }}
+                    animate={{ x: -SIDE_OFFSET, y: (ACTIVE_H - SIDE_H) / 2, opacity: 0.65 }}
                     transition={{ type: "spring", stiffness: 300, damping: 32 }}
                     onClick={prev}
                 >
-                    <PhoneShell width={SIDE_W} height={SIDE_H} shadow="0 16px 40px -8px rgba(0,0,0,0.45)">
-                        <Image src={screenshots[prevIdx].src} alt={screenshots[prevIdx].alt} fill className="object-cover" sizes="220px" />
-                    </PhoneShell>
+                    <Image src={screenshots[prevIdx].src} alt={screenshots[prevIdx].alt} fill className="object-cover" sizes="200px" />
                 </motion.div>
 
-                {/* Next phone */}
+                {/* Next screenshot */}
                 <motion.div
-                    className="absolute cursor-pointer"
-                    style={{ zIndex: 1 }}
-                    animate={{ x: SIDE_OFFSET, y: (ACTIVE_H - SIDE_H) / 2, opacity: 0.72 }}
+                    className="absolute cursor-pointer overflow-hidden"
+                    style={{ zIndex: 1, width: SIDE_W, height: SIDE_H, borderRadius: SIDE_CORNER_R, boxShadow: "0 12px 32px rgba(0,0,0,0.25)" }}
+                    animate={{ x: SIDE_OFFSET, y: (ACTIVE_H - SIDE_H) / 2, opacity: 0.65 }}
                     transition={{ type: "spring", stiffness: 300, damping: 32 }}
                     onClick={next}
                 >
-                    <PhoneShell width={SIDE_W} height={SIDE_H} shadow="0 16px 40px -8px rgba(0,0,0,0.45)">
-                        <Image src={screenshots[nextIdx].src} alt={screenshots[nextIdx].alt} fill className="object-cover" sizes="220px" />
-                    </PhoneShell>
+                    <Image src={screenshots[nextIdx].src} alt={screenshots[nextIdx].alt} fill className="object-cover" sizes="200px" />
                 </motion.div>
 
-                {/* Active phone — image slides inside the shell */}
-                <div className="absolute" style={{ zIndex: 2, left: 0, top: 0 }}>
-                    <PhoneShell
-                        width={ACTIVE_W}
-                        height={ACTIVE_H}
-                        shadow="0 32px 64px -12px rgba(0,0,0,0.65), 0 0 0 1px rgba(255,255,255,0.06)"
-                    >
-                        <AnimatePresence initial={false} custom={direction.current} mode="popLayout">
-                            <motion.div
-                                key={active}
-                                custom={direction.current}
-                                variants={variants}
-                                initial="enter"
-                                animate="center"
-                                exit="exit"
-                                transition={{
-                                    x: { type: "spring", stiffness: 300, damping: 30 },
-                                    opacity: { duration: 0.18 },
-                                }}
-                                className="absolute inset-0"
-                            >
-                                <Image src={current.src} alt={current.alt} fill className="object-cover" sizes="280px" priority />
-                            </motion.div>
-                        </AnimatePresence>
-                    </PhoneShell>
+                {/* Active screenshot — slides in/out */}
+                <div
+                    className="absolute overflow-hidden"
+                    style={{ zIndex: 2, left: 0, top: 0, width: ACTIVE_W, height: ACTIVE_H, borderRadius: CORNER_R, boxShadow: "0 24px 56px rgba(0,0,0,0.35)" }}
+                >
+                    <AnimatePresence initial={false} custom={direction.current} mode="popLayout">
+                        <motion.div
+                            key={active}
+                            custom={direction.current}
+                            variants={variants}
+                            initial="enter"
+                            animate="center"
+                            exit="exit"
+                            transition={{
+                                x: { type: "spring", stiffness: 300, damping: 30 },
+                                opacity: { duration: 0.18 },
+                            }}
+                            className="absolute inset-0"
+                        >
+                            <Image src={current.src} alt={current.alt} fill className="object-cover" sizes="260px" priority />
+                        </motion.div>
+                    </AnimatePresence>
                 </div>
 
                 <ArrowBtn onClick={prev} label="Previous screenshot" side="left" />

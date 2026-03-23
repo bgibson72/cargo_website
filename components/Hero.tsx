@@ -30,11 +30,11 @@ export default function Hero() {
           transition={{ duration: 0.6, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
         >
           <Image
-            src="/app-icon.png"
-            alt="Cargo app icon"
-            width={300}
-            height={300}
-            className="rounded-[27%] shadow-2xl"
+            src="/cargo-logo.png"
+            alt="Cargo box logo"
+            width={220}
+            height={220}
+            className="drop-shadow-2xl"
             priority
           />
         </motion.div>

@@ -7,73 +7,52 @@ import Image from "next/image";
 const screenshots = [
     {
         src: "/screenshots/screenshot-1.png",
-        alt: "Cargo — package list, light mode",
+        alt: "Cargo — content view",
         title: "Your Deliveries at a Glance",
         caption:
             "All your active packages in one clean list, with live status and estimated arrival.",
     },
     {
         src: "/screenshots/screenshot-2.png",
+        alt: "Cargo — empty state",
+        title: "Clean & Simple",
+        caption:
+            "No clutter, no noise. Add your first package and Cargo takes care of the rest.",
+    },
+    {
+        src: "/screenshots/screenshot-3.png",
         alt: "Cargo — add a package",
         title: "Add a Package in Seconds",
         caption:
             "Paste any tracking number and Cargo detects the carrier automatically.",
     },
     {
-        src: "/screenshots/screenshot-3.png",
-        alt: "Cargo — delivery timeline",
+        src: "/screenshots/screenshot-4.png",
+        alt: "Cargo — select carrier",
+        title: "1,300+ Carriers Supported",
+        caption:
+            "UPS, FedEx, USPS, DHL and over a thousand more — always the right carrier, automatically.",
+    },
+    {
+        src: "/screenshots/screenshot-5.png",
+        alt: "Cargo — package details",
         title: "Full Delivery Timeline",
         caption:
             "Every scan, every status update — from the warehouse to your front door.",
     },
     {
-        src: "/screenshots/screenshot-4.png",
-        alt: "Cargo — estimated delivery",
-        title: "Estimated Delivery",
-        caption:
-            "See your expected arrival date front and centre so you're never left guessing.",
-    },
-    {
-        src: "/screenshots/screenshot-5.png",
-        alt: "Cargo — live tracking status",
-        title: "Live Tracking Status",
-        caption:
-            "In-transit, out for delivery, delivered — always accurate, always up to date.",
-    },
-    {
         src: "/screenshots/screenshot-6.png",
-        alt: "Cargo — carrier details",
-        title: "Carrier Details",
-        caption:
-            "Cargo supports UPS, FedEx, USPS, DHL and dozens more carriers worldwide.",
-    },
-    {
-        src: "/screenshots/screenshot-7.png",
-        alt: "Cargo — light mode",
-        title: "Light Mode",
-        caption:
-            "A warm cream palette for daytime use — easy on the eyes, always elegant.",
-    },
-    {
-        src: "/screenshots/screenshot-8.png",
-        alt: "Cargo — dark mode",
-        title: "Dark Mode",
-        caption:
-            "Rich dark brown tones for low-light environments. Your widgets match too.",
-    },
-    {
-        src: "/screenshots/screenshot-9.png",
         alt: "Cargo Pro — paywall",
         title: "Cargo Pro",
         caption:
-            "Unlock unlimited tracking, automatic refresh, and priority support.",
+            "Unlock unlimited tracking, automatic background refresh, and priority support.",
     },
     {
-        src: "/screenshots/screenshot-10.png",
-        alt: "Cargo — settings",
-        title: "Settings",
+        src: "/screenshots/screenshot-7.png",
+        alt: "Cargo — light & dark mode settings",
+        title: "Light & Dark Mode",
         caption:
-            "Choose your theme, manage your subscription, and control your experience.",
+            "A warm, hand-crafted design in both light and dark — switch anytime from Settings.",
     },
 ];
 

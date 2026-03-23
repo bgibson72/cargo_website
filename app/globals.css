@@ -12,7 +12,7 @@
   font-display: swap;
 }
 
-/* ─── Design tokens ─── */
+/* ─── Light mode tokens (default) ─── */
 :root {
   --bg:           #F0EAE0;
   --bg-surface:   #E6DDD2;
@@ -24,8 +24,9 @@
   --border:       #D4C4B0;
 }
 
+/* ─── Dark mode tokens — system preference (before JS runs) ─── */
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme="light"]) {
     --bg:           #1C1006;
     --bg-surface:   #2A1A0A;
     --bg-card:      #3A2410;
@@ -35,6 +36,30 @@
     --text-muted:   #9A7255;
     --border:       #4A3020;
   }
+}
+
+/* ─── Dark mode tokens — JS toggle ─── */
+[data-theme="dark"] {
+  --bg:           #1C1006;
+  --bg-surface:   #2A1A0A;
+  --bg-card:      #3A2410;
+  --accent:       #D4803A;
+  --accent-light: #E8964E;
+  --text:         #F2EDE4;
+  --text-muted:   #9A7255;
+  --border:       #4A3020;
+}
+
+/* ─── Light mode tokens — JS toggle ─── */
+[data-theme="light"] {
+  --bg:           #F0EAE0;
+  --bg-surface:   #E6DDD2;
+  --bg-card:      #FFFFFF;
+  --accent:       #C8752E;
+  --accent-light: #E0933F;
+  --text:         #1C0F06;
+  --text-muted:   #7A5030;
+  --border:       #D4C4B0;
 }
 
 /* ─── Tailwind v4 theme extension ─── */

@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
+import { AnimatePresence } from "framer-motion";
+import SupportForm from "./SupportForm";
 
 type Theme = "light" | "dark";
 
@@ -21,6 +23,7 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [theme, setTheme] = useState<Theme>("light");
   const [mounted, setMounted] = useState(false);
+  const [showSupport, setShowSupport] = useState(false);
 
   useEffect(() => {
     const initial = getInitialTheme();
@@ -40,7 +43,8 @@ export default function Navbar() {
   };
 
   return (
-    <nav
+    <>
+      <nav
       className={`fixed top-0 inset-x-0 z-50 transition-all duration-300 ${
         scrolled ? "py-3 backdrop-blur-md" : "py-5"
       }`}

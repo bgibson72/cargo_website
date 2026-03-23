@@ -103,6 +103,21 @@ export default function Navbar() {
 
           {/* Right side actions */}
           <div className="flex items-center gap-3">
+            {/* Get Cargo CTA */}
+            <a
+              href="#pricing"
+              className="text-sm font-medium px-4 py-2 rounded-full transition-colors"
+              style={{ backgroundColor: "var(--accent)", color: "#fff" }}
+              onMouseEnter={(e) =>
+                (e.currentTarget.style.backgroundColor = "var(--accent-light)")
+              }
+              onMouseLeave={(e) =>
+                (e.currentTarget.style.backgroundColor = "var(--accent)")
+              }
+            >
+              Get Cargo
+            </a>
+
             {/* Theme toggle — only renders after mount to avoid hydration mismatch */}
             {mounted && (
               <button
@@ -131,21 +146,6 @@ export default function Navbar() {
                 )}
               </button>
             )}
-
-            {/* Get Cargo CTA */}
-            <a
-              href="#pricing"
-              className="text-sm font-medium px-4 py-2 rounded-full transition-colors"
-              style={{ backgroundColor: "var(--accent)", color: "#fff" }}
-              onMouseEnter={(e) =>
-                (e.currentTarget.style.backgroundColor = "var(--accent-light)")
-              }
-              onMouseLeave={(e) =>
-                (e.currentTarget.style.backgroundColor = "var(--accent)")
-              }
-            >
-              Get Cargo
-            </a>
           </div>
         </div>
       </nav>

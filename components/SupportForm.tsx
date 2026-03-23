@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 const OS_OPTIONS: Record<string, string[]> = {
   iPhone: ["iOS 26", "iOS 18", "iOS 17", "Other OS version"],
   iPad:   ["iPadOS 26", "iPadOS 18", "iPadOS 17", "Other OS version"],
-  Mac:    ["macOS 26 Tahoe", "macOS 15 Sequoia", "macOS 14 Sonoma", "macOS 13 Monterey", "Other OS version"],
+  Mac:    ["macOS 26 Tahoe", "macOS 15 Sequoia", "macOS 14 Sonoma", "macOS 13 Ventura", "Other OS version"],
 };
 
 const FIELD_STYLE: React.CSSProperties = {

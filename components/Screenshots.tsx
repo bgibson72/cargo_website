@@ -9,67 +9,60 @@ const screenshots = [
         src: "/screenshots/screenshot-1.png",
         alt: "Cargo — empty state",
         title: "Clean & Simple",
-        caption:
-            "No clutter, no noise. Add your first package and Cargo takes care of the rest.",
+        caption: "No clutter, no noise. Add your first package and Cargo takes care of the rest.",
     },
     {
         src: "/screenshots/screenshot-2.png",
         alt: "Cargo — content view",
         title: "Your Deliveries at a Glance",
-        caption:
-            "All your active packages in one clean list, with live status and estimated arrival.",
+        caption: "All your active packages in one clean list, with live status and estimated arrival.",
     },
     {
         src: "/screenshots/screenshot-3.png",
         alt: "Cargo — select carrier",
         title: "1,300+ Carriers Supported",
-        caption:
-            "UPS, FedEx, USPS, DHL and over a thousand more — always the right carrier, automatically.",
+        caption: "UPS, FedEx, USPS, DHL and over a thousand more — always the right carrier, automatically.",
     },
     {
         src: "/screenshots/screenshot-4.png",
         alt: "Cargo — package details",
         title: "Full Delivery Timeline",
-        caption:
-            "Every scan, every status update — from the warehouse to your front door.",
+        caption: "Every scan, every status update — from the warehouse to your front door.",
     },
     {
         src: "/screenshots/screenshot-5.png",
         alt: "Cargo — light & dark mode settings",
         title: "Light & Dark Mode",
-        caption:
-            "A warm, hand-crafted design in both light and dark — switch anytime from Settings.",
+        caption: "A warm, hand-crafted design in both light and dark — switch anytime from Settings.",
     },
     {
         src: "/screenshots/screenshot-6.png",
         alt: "Cargo Pro — paywall",
         title: "Cargo Pro",
-        caption:
-            "Unlock unlimited tracking, automatic background refresh, and priority support.",
+        caption: "Unlock unlimited tracking, automatic background refresh, and priority support.",
     },
 ];
 
 const N = screenshots.length;
 
-// Dimensions
 const ACTIVE_W = 260;
 const ACTIVE_H = 560;
 const SIDE_SCALE = 0.78;
 const SIDE_W = Math.round(ACTIVE_W * SIDE_SCALE);
 const SIDE_H = Math.round(ACTIVE_H * SIDE_SCALE);
-const SIDE_OFFSET = Math.round(ACTIVE_W * 0.52); // horizontal offset from centre
-const ARROW_OFFSET = SIDE_OFFSET + SIDE_W + 16;   // arrow button x from centre
+const SIDE_OFFSET = Math.round(ACTIVE_W * 0.52);
+const ARROW_OFFSET = SIDE_OFFSET + SIDE_W + 16;
 
 function PhoneShell({
     width,
     height,
-    children,
     shadow,
+    children,
 }: {
     width: number;
     height: number;
-    children: React.ReactNode;
     shadow: string;
+    children?: React.ReactNode;
 }) {
     const border = Math.round(width * 0.03);
     const radius = Math.round(width * 0.154);
@@ -78,17 +71,19 @@ function PhoneShell({
     const islandH = Math.round(width * 0.1);
 
     return (
-        <div className="relative shrink-0 select-none overflow-visible" style={{ width, height }}>
+        <div className="relative shrink-0 select-none" style={{ width, height }}>
+            {/* Frame border */}
             <div
-                className="absolute inset-0"
+                className="absolute inset-0 pointer-events-none"
                 style={{
                     borderRadius: radius,
                     border: `${border}px solid`,
                     borderColor: "color-mix(in srgb, var(--text) 22%, transparent)",
-                    backgroundColor: "var(--bg-card)",
                     boxShadow: shadow,
+                    zIndex: 2,
                 }}
             >
+                {/* Dynamic Island */}
                 <div
                     className="absolute left-1/2 -translate-x-1/2"
                     style={{
@@ -97,11 +92,16 @@ function PhoneShell({
                         height: islandH,
                         borderRadius: islandH / 2,
                         backgroundColor: "var(--text)",
+                        zIndex: 3,
                     }}
                 />
-                <div className="absolute overflow-hidden" style={{ inset: 1, borderRadius: innerRadius }}>
-                    {children}
-                </div>
+            </div>
+            {/* Screen — clips children to rounded rect */}
+            <div
+                className="absolute overflow-hidden"
+                style={{ inset: border, borderRadius: innerRadius, zIndex: 1 }}
+            >
+                {children}
             </div>
             {/* Side button */}
             <div
@@ -112,6 +112,7 @@ function PhoneShell({
                     width: Math.round(width * 0.015),
                     height: Math.round(height * 0.107),
                     backgroundColor: "color-mix(in srgb, var(--text) 25%, transparent)",
+                    zIndex: 2,
                 }}
             />
             {/* Volume buttons */}
@@ -125,6 +126,7 @@ function PhoneShell({
                         width: Math.round(width * 0.015),
                         height: Math.round(height * 0.064),
                         backgroundColor: "color-mix(in srgb, var(--text) 25%, transparent)",
+                        zIndex: 2,
                     }}
                 />
             ))}
@@ -132,22 +134,14 @@ function PhoneShell({
     );
 }
 
-function ArrowBtn({
-    onClick,
-    label,
-    side,
-}: {
-    onClick: () => void;
-    label: string;
-    side: "left" | "right";
-}) {
+function ArrowBtn({ onClick, label, side }: { onClick: () => void; label: string; side: "left" | "right" }) {
     return (
         <button
             onClick={onClick}
             aria-label={label}
             className="absolute top-1/2 -translate-y-1/2 w-11 h-11 rounded-full flex items-center justify-center transition-all hover:scale-110 active:scale-95"
             style={{
-                [side]: -ARROW_OFFSET - 22, // 22 = half of w-11 (44px)
+                [side]: -ARROW_OFFSET - 22,
                 zIndex: 10,
                 backgroundColor: "var(--bg-card)",
                 border: "1px solid var(--border)",
@@ -163,7 +157,6 @@ function ArrowBtn({
 
 export default function Screenshots() {
     const [active, setActive] = useState(0);
-    // direction: +1 = forward (right), -1 = backward (left)
     const direction = useRef(1);
 
     const prev = useCallback(() => {
@@ -185,22 +178,17 @@ export default function Screenshots() {
     const nextIdx = (active + 1) % N;
     const current = screenshots[active];
 
-    // Slide enter/exit x values for circular motion
     const SLIDE_TRAVEL = ACTIVE_W * 1.1;
     const variants = {
         enter: (dir: number) => ({ x: dir * SLIDE_TRAVEL, opacity: 0 }),
         center: { x: 0, opacity: 1 },
-        exit: (dir: number) => ({ x: -dir * SLIDE_TRAVEL, opacity: 0 }),
+        exit:  (dir: number) => ({ x: -dir * SLIDE_TRAVEL, opacity: 0 }),
     };
 
     const stackH = ACTIVE_H + 40;
 
     return (
-        <section
-            id="screenshots"
-            className="py-24 overflow-hidden"
-            style={{ backgroundColor: "var(--bg)" }}
-        >
+        <section id="screenshots" className="py-24 overflow-hidden" style={{ backgroundColor: "var(--bg)" }}>
             {/* Heading */}
             <div className="max-w-5xl mx-auto px-6 mb-16 text-center">
                 <motion.div
@@ -209,10 +197,7 @@ export default function Screenshots() {
                     viewport={{ once: true, margin: "-80px" }}
                     transition={{ duration: 0.6 }}
                 >
-                    <h2
-                        className="text-4xl sm:text-5xl font-semibold tracking-tight mb-4"
-                        style={{ color: "var(--text)" }}
-                    >
+                    <h2 className="text-4xl sm:text-5xl font-semibold tracking-tight mb-4" style={{ color: "var(--text)" }}>
                         See it in action
                     </h2>
                     <p className="text-lg" style={{ color: "var(--text-muted)" }}>
@@ -221,121 +206,63 @@ export default function Screenshots() {
                 </motion.div>
             </div>
 
-            {/* ── Three-phone stage ── */}
-            <div
-                className="relative mx-auto"
-                style={{ width: ACTIVE_W, height: stackH }}
-            >
-                {/* Prev phone — left, behind active */}
+            {/* Three-phone stage */}
+            <div className="relative mx-auto" style={{ width: ACTIVE_W, height: stackH }}>
+
+                {/* Prev phone */}
                 <motion.div
                     className="absolute cursor-pointer"
                     style={{ zIndex: 1 }}
-                    animate={{
-                        x: -SIDE_OFFSET,
-                        y: (ACTIVE_H - SIDE_H) / 2,
-                        opacity: 0.72,
-                    }}
+                    animate={{ x: -SIDE_OFFSET, y: (ACTIVE_H - SIDE_H) / 2, opacity: 0.72 }}
                     transition={{ type: "spring", stiffness: 300, damping: 32 }}
                     onClick={prev}
-                    aria-label="Previous screenshot"
                 >
-                    <PhoneShell
-                        width={SIDE_W}
-                        height={SIDE_H}
-                        shadow="0 16px 40px -8px rgba(0,0,0,0.45)"
-                    >
-                        <Image
-                            src={screenshots[prevIdx].src}
-                            alt={screenshots[prevIdx].alt}
-                            fill
-                            className="object-cover"
-                            sizes="220px"
-                        />
+                    <PhoneShell width={SIDE_W} height={SIDE_H} shadow="0 16px 40px -8px rgba(0,0,0,0.45)">
+                        <Image src={screenshots[prevIdx].src} alt={screenshots[prevIdx].alt} fill className="object-cover" sizes="220px" />
                     </PhoneShell>
                 </motion.div>
 
-                {/* Next phone — right, behind active */}
+                {/* Next phone */}
                 <motion.div
                     className="absolute cursor-pointer"
                     style={{ zIndex: 1 }}
-                    animate={{
-                        x: SIDE_OFFSET,
-                        y: (ACTIVE_H - SIDE_H) / 2,
-                        opacity: 0.72,
-                    }}
+                    animate={{ x: SIDE_OFFSET, y: (ACTIVE_H - SIDE_H) / 2, opacity: 0.72 }}
                     transition={{ type: "spring", stiffness: 300, damping: 32 }}
                     onClick={next}
-                    aria-label="Next screenshot"
                 >
-                    <PhoneShell
-                        width={SIDE_W}
-                        height={SIDE_H}
-                        shadow="0 16px 40px -8px rgba(0,0,0,0.45)"
-                    >
-                        <Image
-                            src={screenshots[nextIdx].src}
-                            alt={screenshots[nextIdx].alt}
-                            fill
-                            className="object-cover"
-                            sizes="220px"
-                        />
+                    <PhoneShell width={SIDE_W} height={SIDE_H} shadow="0 16px 40px -8px rgba(0,0,0,0.45)">
+                        <Image src={screenshots[nextIdx].src} alt={screenshots[nextIdx].alt} fill className="object-cover" sizes="220px" />
                     </PhoneShell>
                 </motion.div>
 
-                {/* Active phone — centre, in front with circular slide animation */}
-                <div
-                    className="absolute overflow-hidden"
-                    style={{
-                        zIndex: 2,
-                        left: 0,
-                        top: 0,
-                        width: ACTIVE_W,
-                        height: ACTIVE_H,
-                        borderRadius: Math.round(ACTIVE_W * 0.154),
-                    }}
-                >
-                    <AnimatePresence initial={false} custom={direction.current} mode="popLayout">
-                        <motion.div
-                            key={active}
-                            custom={direction.current}
-                            variants={variants}
-                            initial="enter"
-                            animate="center"
-                            exit="exit"
-                            transition={{
-                                x: { type: "spring", stiffness: 300, damping: 30 },
-                                opacity: { duration: 0.18 },
-                            }}
-                            className="absolute inset-0"
-                        >
-                            <Image
-                                src={current.src}
-                                alt={current.alt}
-                                fill
-                                className="object-cover"
-                                sizes="280px"
-                                priority
-                            />
-                        </motion.div>
-                    </AnimatePresence>
-                </div>
-
-                {/* Phone shell overlay (border + buttons) rendered on top of sliding image */}
-                <div className="absolute inset-0" style={{ zIndex: 3, pointerEvents: "none" }}>
+                {/* Active phone — image slides inside the shell */}
+                <div className="absolute" style={{ zIndex: 2, left: 0, top: 0 }}>
                     <PhoneShell
                         width={ACTIVE_W}
                         height={ACTIVE_H}
                         shadow="0 32px 64px -12px rgba(0,0,0,0.65), 0 0 0 1px rgba(255,255,255,0.06)"
                     >
-                        {/* empty — image rendered behind */}
-                        <div />
+                        <AnimatePresence initial={false} custom={direction.current} mode="popLayout">
+                            <motion.div
+                                key={active}
+                                custom={direction.current}
+                                variants={variants}
+                                initial="enter"
+                                animate="center"
+                                exit="exit"
+                                transition={{
+                                    x: { type: "spring", stiffness: 300, damping: 30 },
+                                    opacity: { duration: 0.18 },
+                                }}
+                                className="absolute inset-0"
+                            >
+                                <Image src={current.src} alt={current.alt} fill className="object-cover" sizes="280px" priority />
+                            </motion.div>
+                        </AnimatePresence>
                     </PhoneShell>
                 </div>
 
-                {/* ← Arrow — left of stage */}
                 <ArrowBtn onClick={prev} label="Previous screenshot" side="left" />
-
-                {/* → Arrow — right of stage */}
                 <ArrowBtn onClick={next} label="Next screenshot" side="right" />
             </div>
 
@@ -349,17 +276,13 @@ export default function Screenshots() {
                         exit={{ opacity: 0, y: -8 }}
                         transition={{ duration: 0.25 }}
                     >
-                        <p className="text-base font-semibold mb-1" style={{ color: "var(--text)" }}>
-                            {current.title}
-                        </p>
-                        <p className="text-sm max-w-sm mx-auto" style={{ color: "var(--text-muted)" }}>
-                            {current.caption}
-                        </p>
+                        <p className="text-base font-semibold mb-1" style={{ color: "var(--text)" }}>{current.title}</p>
+                        <p className="text-sm max-w-sm mx-auto" style={{ color: "var(--text-muted)" }}>{current.caption}</p>
                     </motion.div>
                 </AnimatePresence>
             </div>
 
-            {/* Dot indicators */}
+            {/* Dots */}
             <div className="flex justify-center gap-2 mt-6">
                 {screenshots.map((_, i) => (
                     <button
@@ -370,8 +293,7 @@ export default function Screenshots() {
                         style={{
                             width: active === i ? 24 : 8,
                             height: 8,
-                            backgroundColor:
-                                active === i ? "var(--accent)" : "var(--border)",
+                            backgroundColor: active === i ? "var(--accent)" : "var(--border)",
                         }}
                     />
                 ))}

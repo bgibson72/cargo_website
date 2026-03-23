@@ -67,8 +67,6 @@ function PhoneShell({
     const border = Math.round(width * 0.03);
     const radius = Math.round(width * 0.154);
     const innerRadius = radius - border - 1;
-    const islandW = Math.round(width * 0.308);
-    const islandH = Math.round(width * 0.1);
 
     return (
         <div className="relative shrink-0 select-none" style={{ width, height }}>
@@ -82,20 +80,7 @@ function PhoneShell({
                     boxShadow: shadow,
                     zIndex: 2,
                 }}
-            >
-                {/* Dynamic Island */}
-                <div
-                    className="absolute left-1/2 -translate-x-1/2"
-                    style={{
-                        top: border + 4,
-                        width: islandW,
-                        height: islandH,
-                        borderRadius: islandH / 2,
-                        backgroundColor: "var(--text)",
-                        zIndex: 3,
-                    }}
-                />
-            </div>
+            />
             {/* Screen — clips children to rounded rect */}
             <div
                 className="absolute overflow-hidden"

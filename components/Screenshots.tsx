@@ -68,6 +68,7 @@ export default function Screenshots() {
     const offset = card.offsetLeft - (track.clientWidth - card.offsetWidth) / 2;
     track.scrollTo({ left: offset, behavior: "smooth" });
     setActive(index);
+    setActiveCaption(screenshots[index]);
   }, []);
 
   useEffect(() => {
